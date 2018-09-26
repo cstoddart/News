@@ -5,19 +5,40 @@ import { PostList } from '../ui';
 
 class Reddit extends Component {
   state = {
-    posts: [],
+    posts: [{
+      id: '',
+      thumbnail: '',
+      title: '',
+      category: '',
+    }],
+    nextPage: '',
   };
 
   async componentDidMount() {
-    const { data } = await axios.get('https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json');
-    const posts = data.data.children.map(child => child.data);
-    console.log('POSTS', posts);
+    const { data: { data } } = await axios.get('https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json');
+    // console.log('DATA', data);
+    const posts = data.children.map(child => {
+      const post = child.data;
+      return {
+        id: post.id,
+        thumbnail: post.thumbnail,
+        title: post.title,
+        category: `r/${post.subreddit}`,
+      };
+    });
+    const nextPage = data.after;
+    // console.log('POSTS', posts);
 
-    this.setState({ posts });
+    this.setState({
+      posts,
+      nextPage,
+    });
   }
 
-  getPost = async (id, subreddit) => {
-    const { data } = await axios.get(`https://www.reddit.com/r/${subreddit}/comments/${id}.json`);
+  getPost = async ({ id, category }) => {
+    console.log('ID', id);
+    console.log('CATEGORY', category);
+    const { data } = await axios.get(`https://www.reddit.com/${category}/comments/${id}.json`);
     const postDetails = data[0].data.children[0].data;
     console.log('POST DETAILS', postDetails);
     const postComments = data[1];
@@ -49,10 +70,33 @@ class Reddit extends Component {
     return post;
   }
 
+  nextPage = async () => {
+    const { data: { data } } = await axios.get(`https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json?after=${this.state.nextPage}`);
+    const posts = data.children.map(child => {
+      const post = child.data;
+      return {
+        id: post.id,
+        thumbnail: post.thumbnail,
+        title: post.title,
+        category: `r/${post.subreddit}`,
+      };
+    });
+    const nextPage = data.after;
+
+    this.setState({
+      posts: [...this.state.posts, ...posts],
+      nextPage,
+    });
+  }
+
   render() {
     return (
       <div>
-        <PostList posts={this.state.posts} getPost={this.getPost} />
+        <PostList
+          posts={this.state.posts}
+          getPost={this.getPost}
+          nextPage={this.nextPage}
+        />
       </div>
     );
   }

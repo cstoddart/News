@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Post from '../post/Post';
 import {
+  StyledPostList,
   PostPreview,
   PostThumbnail,
 } from './PostListStyles';
@@ -13,7 +14,7 @@ class PostList extends Component {
   };
 
   showPost = async (post) => {
-    const currentPost = await this.props.getPost(post.id, post.subreddit);
+    const currentPost = await this.props.getPost(post);
 
     this.setState({
       showPost: true,
@@ -28,25 +29,32 @@ class PostList extends Component {
     })
   }
 
+  infiniteScroll = (event) => {
+    const element = event.target;
+    if (element.scrollHeight - (element.scrollTop + element.offsetHeight) < 1) {
+      this.props.nextPage();
+    }
+  }
+
   render() {
     return (
-      <div>
+      <StyledPostList onScroll={this.infiniteScroll}>
         {this.props.posts.map(post => (
           <PostPreview key={post.id} onClick={() => this.showPost(post)}>
-            {post.thumbnail.includes('http') ?
+            {post.thumbnail && post.thumbnail.includes('http') ?
               <PostThumbnail src={post.thumbnail} />
               : null
             }
             <div>
               <h3>{post.title}</h3>
-              <p>{post.subreddit}</p>
+              <p>{post.category}</p>
             </div>
           </PostPreview>
         ))}
         {this.state.showPost && 
           <Post post={this.state.currentPost} hidePost={this.hidePost} />
         }
-      </div>
+      </StyledPostList>
     );
   }
 }
