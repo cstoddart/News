@@ -23,12 +23,15 @@ const Post = ({ post, hidePost }) => (
 );
 
 Post.propTypes = {
-  title: PropTypes.string.isRequired,
-  media: PropTypes.shape({
-    type: PropTypes.oneOf([ 'image', 'video']).isRequired,
-    source: PropTypes.string.isRequired,
-  }),
-  text: PropTypes.string,
+  post: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    media: PropTypes.shape({
+      type: PropTypes.oneOf(['image', 'video']).isRequired,
+      source: PropTypes.string.isRequired,
+    }),
+    text: PropTypes.string,
+  }).isRequired,
+  hidePost: PropTypes.func,
 }
 
 export default Post;

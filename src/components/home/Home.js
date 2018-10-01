@@ -1,15 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
-import { getPostsFromAllSources, getNextPostsFromAllSources } from '../../sources';
-import { PostList } from '../ui';
-// import Reddit from '../sources/Reddit';
+import { getPostsFromAllSources, getNextPostsFromAllSources, getPostFromSource } from '../../sources';
+import { PostList, Post } from '../ui';
 
 class Home extends Component {
   state = {
     posts: [],
     nextPageTokens: {
       reddit: '',
-    }
+    },
+    showPost: false,
+    currentPost: {},
   }
 
   async componentDidMount() {
@@ -31,8 +32,28 @@ class Home extends Component {
     });
   }
 
+  getPost = async (post) => {
+    const currentPost = await getPostFromSource(post);
+
+    this.setState({
+      showPost: true,
+      currentPost,
+    });
+  }
+
   render() {
-    return <PostList posts={this.state.posts} nextPage={this.getNextPage} />;
+    return (
+      <Fragment>
+        <PostList
+          posts={this.state.posts}
+          nextPage={this.getNextPage}
+          showPost={this.getPost}
+        />
+        {this.state.showPost &&
+          <Post post={this.state.currentPost} />
+        }
+      </Fragment>
+    );
   }
 }
 

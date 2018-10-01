@@ -1,4 +1,5 @@
-import { getRedditPosts, getNextRedditPosts } from './reddit';
+import { getRedditPosts, getNextRedditPosts, getRedditPost } from './reddit';
+import { getMediumPosts } from './medium';
 
 export async function getPostsFromAllSources() {
   const {
@@ -6,9 +7,15 @@ export async function getPostsFromAllSources() {
     nextPageToken: redditNextPageToken
   } = await getRedditPosts();
 
+  // const {
+  //   posts: mediumPosts,
+  // } = await getMediumPosts();
+  // console.log('MEDIUM POSTS', mediumPosts);
+
   return {
     posts: [
       ...redditPosts,
+      // ...mediumPosts,
     ],
     nextPageTokens: {
       reddit: redditNextPageToken,
@@ -31,3 +38,9 @@ export async function getNextPostsFromAllSources(nextPageTokens) {
     },
   };
 };
+
+export async function getPostFromSource(post) {
+  if (post.sourceType === 'reddit') {
+    return getRedditPost(post);
+  }
+}
