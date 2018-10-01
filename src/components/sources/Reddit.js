@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 
 import { PostList } from '../ui';
 
@@ -9,13 +8,14 @@ class Reddit extends Component {
       id: '',
       thumbnail: '',
       title: '',
-      category: '',
+      source: '',
     }],
     nextPage: '',
   };
 
   async componentDidMount() {
-    const { data: { data } } = await axios.get('https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json');
+    const { data } = await fetch('https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json')
+      .then(response => response.json());
     // console.log('DATA', data);
     const posts = data.children.map(child => {
       const post = child.data;
@@ -23,7 +23,7 @@ class Reddit extends Component {
         id: post.id,
         thumbnail: post.thumbnail,
         title: post.title,
-        category: `r/${post.subreddit}`,
+        source: `r/${post.subreddit}`,
       };
     });
     const nextPage = data.after;
@@ -35,50 +35,49 @@ class Reddit extends Component {
     });
   }
 
-  getPost = async ({ id, category }) => {
-    console.log('ID', id);
-    console.log('CATEGORY', category);
-    const { data } = await axios.get(`https://www.reddit.com/${category}/comments/${id}.json`);
-    const postDetails = data[0].data.children[0].data;
-    console.log('POST DETAILS', postDetails);
-    const postComments = data[1];
-
+  getPost = async ({ id, source }) => {
+    const data = await fetch(`https://www.reddit.com/${source}/comments/${id}.json`)
+      .then(response => response.json());
+    console.log('DATA', data);
+    const post = data[0].data.children[0].data;
+    const comments = data[1].data.children;
+    console.log('COMMENTS', comments);
     let mediaType;
     let mediaSource;
 
-    if (postDetails.media && postDetails.media.reddit_video) {
+    if (post.media && post.media.reddit_video) {
       mediaType = 'video';
-      mediaSource = postDetails.media.reddit_video.fallback_url;
+      mediaSource = post.media.reddit_video.fallback_url;
     } else if (
-      postDetails.url.includes('.png') ||
-      postDetails.url.includes('.jpg') ||
-      postDetails.url.includes('.jpeg')
+      post.url.includes('.png') ||
+      post.url.includes('.jpg') ||
+      post.url.includes('.jpeg')
     ) {
       mediaType = 'image';
-      mediaSource = postDetails.url;
+      mediaSource = post.url;
     }
 
-    const post = {
-      title: postDetails.title,
+    return {
+      title: post.title,
       media: {
         type: mediaType,
         source: mediaSource
       },
-      text: postDetails.selftext,
+      text: post.selftext,
+      comments: comments,
     };
-    console.log('POST', post);
-    return post;
   }
 
   nextPage = async () => {
-    const { data: { data } } = await axios.get(`https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json?after=${this.state.nextPage}`);
+    const { data: { data } } = await fetch(`https://www.reddit.com/r/ProgrammerHumor+Frontend+javascript+learnjavascript+programming+reactjs+webdev.json?after=${this.state.nextPage}`)
+      .then(response => response.json());
     const posts = data.children.map(child => {
       const post = child.data;
       return {
         id: post.id,
         thumbnail: post.thumbnail,
         title: post.title,
-        category: `r/${post.subreddit}`,
+        source: `r/${post.subreddit}`,
       };
     });
     const nextPage = data.after;

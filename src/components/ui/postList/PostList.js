@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Post from '../post/Post';
 import {
@@ -47,7 +48,7 @@ class PostList extends Component {
             }
             <div>
               <h3>{post.title}</h3>
-              <p>{post.category}</p>
+              <p>{post.source}</p>
             </div>
           </PostPreview>
         ))}
@@ -58,5 +59,12 @@ class PostList extends Component {
     );
   }
 }
+
+PostList.propTypes = {
+  posts: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    source: PropTypes.string.isRequired
+  }))
+};
 
 export default PostList;
