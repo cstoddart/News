@@ -1,2 +1,2 @@
 # News
-Created with CodeSandbox
+Created with CodeSandbox + React
