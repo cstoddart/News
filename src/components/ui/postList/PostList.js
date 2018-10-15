@@ -25,6 +25,9 @@ const PostList = (props) => (
         <div>
           <h3>{post.title}</h3>
           <p>{post.source}</p>
+          {post.summary &&
+            <p>{post.summary}</p>
+          }
         </div>
       </PostPreview>
     ))}
@@ -34,7 +37,8 @@ const PostList = (props) => (
 PostList.propTypes = {
   posts: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
-    source: PropTypes.string.isRequired
+    source: PropTypes.string.isRequired,
+    summary: PropTypes.string,
   }))
 };
 

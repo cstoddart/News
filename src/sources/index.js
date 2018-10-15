@@ -4,19 +4,30 @@ import { getMediumPosts } from './medium';
 export async function getPostsFromAllSources() {
   const {
     posts: redditPosts,
-    nextPageToken: redditNextPageToken
+    nextPageToken: redditNextPageToken,
   } = await getRedditPosts();
 
-  // const {
-  //   posts: mediumPosts,
-  // } = await getMediumPosts();
-  // console.log('MEDIUM POSTS', mediumPosts);
+  const {
+    posts: mediumPosts,
+  } = await getMediumPosts();
+
+  const combinedPosts = [
+    ...mediumPosts,
+  ];
+
+  let redditPostIndex = 0;
+  combinedPosts
+    .sort((a, b) => a.date < b.date)
+    .forEach((post, index) => {
+      if (index % 4 === 0) {
+        const redditPost = redditPosts[redditPostIndex];
+        combinedPosts.splice(index, 0, redditPost);
+        redditPostIndex++;
+      }
+    });
 
   return {
-    posts: [
-      ...redditPosts,
-      // ...mediumPosts,
-    ],
+    posts: combinedPosts,
     nextPageTokens: {
       reddit: redditNextPageToken,
     },
