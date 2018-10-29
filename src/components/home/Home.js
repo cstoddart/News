@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 
-import { getPostsFromAllSources, getNextPostsFromAllSources, getPostFromSource } from '../../sources';
+// import { getPostsFromAllSources, getNextPostsFromAllSources, getPostFromSource } from '../../sources';
 import { PostList, Post } from '../ui';
 
 class Home extends Component {
@@ -14,31 +14,31 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    const { posts, nextPageTokens } = await getPostsFromAllSources();
+    // const { posts, nextPageTokens } = await getPostsFromAllSources();
 
-    this.setState({
-      posts,
-      nextPageTokens,
-    });
+    // this.setState({
+    //   posts,
+    //   nextPageTokens,
+    // });
   }
 
   getNextPage = async () => {
-    const currentPosts = this.state.posts;
-    const { posts, nextPageTokens } = await getNextPostsFromAllSources(this.state.nextPageTokens);
+    // const currentPosts = this.state.posts;
+    // const { posts, nextPageTokens } = await getNextPostsFromAllSources(this.state.nextPageTokens);
 
-    this.setState({
-      posts: [...currentPosts, ...posts],
-      nextPageTokens,
-    });
+    // this.setState({
+    //   posts: [...currentPosts, ...posts],
+    //   nextPageTokens,
+    // });
   }
 
   getPost = async (post) => {
-    const currentPost = await getPostFromSource(post);
+    // const currentPost = await getPostFromSource(post);
 
-    this.setState({
-      showPost: true,
-      currentPost,
-    });
+    // this.setState({
+    //   showPost: true,
+    //   currentPost,
+    // });
   }
 
   render() {
